@@ -1,3 +1,4 @@
+import Chat from '@/components/chat'
 import React from 'react'
 
 
@@ -9,10 +10,8 @@ export interface ChatPageProps {
 
 export default function ChatPage() {
 
-  const isLogin = false
-
 
   return (
-    <div>聊天页面</div>
+    <Chat/>
   )
 }

@@ -1,8 +1,9 @@
 import "@/styles/globals.css"
 import { Metadata } from "next"
+import { Toaster } from "react-hot-toast"
 
 import { siteConfig } from "@/config/site"
-import { fontSans } from "@/lib/fonts"
+import { fontMono, fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
@@ -37,13 +38,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
+            fontSans.variable,
+            fontMono.variable
           )}
         >
+          <Toaster />
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="relative flex min-h-screen flex-col">
+            <div className="flex flex-col min-h-screen">
+              {/* @ts-ignore */}
               <SiteHeader />
-              <div className="flex-1">{children}</div>
+              <main className="flex flex-col flex-1 bg-muted/50">
+                {children}
+              </main>
             </div>
             <TailwindIndicator />
           </ThemeProvider>
