@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 import { Metadata } from "next"
 import { Toaster } from "react-hot-toast"
+import { RecoilRoot } from "recoil"
 
 import { siteConfig } from "@/config/site"
 import { fontMono, fontSans } from "@/lib/fonts"
@@ -44,13 +45,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <Toaster />
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="flex flex-col min-h-screen">
-              {/* @ts-ignore */}
-              <SiteHeader />
-              <main className="flex flex-col flex-1 bg-muted/50">
-                {children}
-              </main>
-            </div>
+            <RecoilRoot>
+              <div className="flex flex-col min-h-screen">
+                {/* @ts-ignore */}
+                <SiteHeader />
+                <main className="flex flex-col flex-1 bg-muted/50">
+                  {children}
+                </main>
+              </div>
+            </RecoilRoot>
             <TailwindIndicator />
           </ThemeProvider>
         </body>
