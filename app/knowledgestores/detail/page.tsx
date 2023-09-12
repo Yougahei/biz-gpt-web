@@ -9,14 +9,15 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { EventStreamContentType, fetchEventSource } from "@microsoft/fetch-event-source"
 import formatSplitText from "@/utils/generateQA"
+import {QaList} from "@/types/dataType";
 
 export default function KnowledgeDetail() {
   const kbid = useSearchParams().get("id")
-
+  let response: string = ""
   const [originFileObj, setOriginFileObj] = useState<any>(null)
   const [files, setFiles] = React.useState<File>()
   const [fileContent, setFileContent] = React.useState<string>("")
-  const [message, setMessage] = React.useState<string>("")
+  const [message, setMessage] = React.useState<QaList>([])
   const [prompt , setPrompt ] = React.useState<string>("")
 
   const getTextContent = async (e: any) => {
@@ -73,7 +74,11 @@ export default function KnowledgeDetail() {
         },
         onclose() {
           // if the server closes the connection unexpectedly, retry:
+          const result = formatSplitText(response || '');
+          const responseList = result.map((item) => item).flat();
           console.log("QA拆分结束")
+          console.log("扁平化拆分结果", responseList)
+          setMessage(responseList)
         },
         onerror(err) {
           console.log("QA拆分错误")
@@ -85,11 +90,7 @@ export default function KnowledgeDetail() {
             // console.log("DONE",event.data);
           } else if (event.data?.startsWith("[ERROR]")) {
           } else {
-            setMessage(event.data)
-            const answer = event.data
-            const result = formatSplitText(answer || '');
-            console.log(`split result length: `, result.length);
-            console.log(result)
+            response = event.data
           }
         },
       }
@@ -132,7 +133,6 @@ export default function KnowledgeDetail() {
             </form>
           </Card>
           <Button onClick={handelChat}>发送</Button>
-          {message}
         </Card>
       </div>
     </div>
