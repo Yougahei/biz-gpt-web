@@ -16,9 +16,6 @@ import { Button, buttonVariants } from "./ui/button"
 import { IconArrowElbow, IconPlus } from "./ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 
-
-
-
 export default function PromptFrom() {
   const Schema = z.object({ query: z.string().min(1) })
   let convUID = ""
@@ -27,8 +24,6 @@ export default function PromptFrom() {
     resolver: zodResolver(Schema),
     defaultValues: {},
   })
-
-
 
   const handelChat = async ({ query }: z.infer<typeof Schema>) => {
     await fetchEventSource(
