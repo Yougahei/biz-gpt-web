@@ -2,29 +2,31 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["mongoDb"]
+  provider = "prisma-client-js"
+  // previewFeatures = ["mongoDb"]
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("MONGO_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
 }
 
 model KnowledgeList {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String    @id @default(cuid()) @map("_id")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   title       String
   description String?
-  dataSets  DataSet[]
-}
-model DataSet {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  data     Bytes
-  knowledgeList KnowledgeList @relation(fields: [knowledgeListId], references: [id])
-  knowledgeListId String @db.ObjectId
+  dataSets    DataSet[]
 }
 
+model DataSet {
+  id              String                 @id @default(cuid()) @map("_id")
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  vector          Unsupported("vector")?
+  q               String
+  a               String
+  knowledgeList   KnowledgeList          @relation(fields: [knowledgeListId], references: [id])
+  knowledgeListId String                 @map("knowledgeList_id")
+}

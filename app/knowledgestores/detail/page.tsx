@@ -17,7 +17,7 @@ export default function KnowledgeDetail() {
   const [originFileObj, setOriginFileObj] = useState<any>(null)
   const [files, setFiles] = React.useState<File>()
   const [fileContent, setFileContent] = React.useState<string>("")
-  const [message, setMessage] = React.useState<QaList>([])
+  const [message, setMessage] = React.useState<string[]>([])
   const [prompt , setPrompt ] = React.useState<string>("")
 
   const getTextContent = async (e: any) => {
@@ -78,7 +78,6 @@ export default function KnowledgeDetail() {
           const responseList = result.map((item) => item).flat();
           console.log("QA拆分结束")
           console.log("扁平化拆分结果", responseList)
-          setMessage(responseList)
         },
         onerror(err) {
           console.log("QA拆分错误")
@@ -97,6 +96,18 @@ export default function KnowledgeDetail() {
     )
   }
 
+
+
+  async function handelSave() {
+    const res = await fetch("/api/dateset", {
+      method: "POST",
+      body: JSON.stringify({
+        dataSetList: []
+      }),
+    })
+    const data = await res.json()
+    console.log(data)
+  }
 
 
   return (
@@ -133,6 +144,7 @@ export default function KnowledgeDetail() {
             </form>
           </Card>
           <Button onClick={handelChat}>发送</Button>
+          <Button onClick={handelSave}>保存</Button>
         </Card>
       </div>
     </div>
