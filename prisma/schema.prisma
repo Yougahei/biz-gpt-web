@@ -20,6 +20,16 @@ model KnowledgeList {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title     String
-  description String
+  description String?
+  dataSets  DataSet[]
+}
+
+model DataSet {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  data     Bytes
+  knowledgeList KnowledgeList @relation(fields: [knowledgeListId], references: [id])
+  knowledgeListId String @db.ObjectId
 }
 
