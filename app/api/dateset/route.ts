@@ -7,7 +7,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
 
   console.log(body)
-  const response = await prisma.dataSet.createMany(body.dataSetList)
+  const response = await prisma.dataSet.createMany({
+    data: body.dataSetList
+  })
   console.log(response)
   return new Response(JSON.stringify({ response }))
 }

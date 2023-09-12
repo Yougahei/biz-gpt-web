@@ -1,13 +1,13 @@
 "use client"
 
-import React, { ReactHTMLElement, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import React, {useState} from "react"
+import {useSearchParams} from "next/navigation"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { EventStreamContentType, fetchEventSource } from "@microsoft/fetch-event-source"
+import {Button} from "@/components/ui/button"
+import {Card} from "@/components/ui/card"
+import {Label} from "@/components/ui/label"
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group"
+import {EventStreamContentType, fetchEventSource} from "@microsoft/fetch-event-source"
 import formatSplitText from "@/utils/generateQA"
 import {QaList} from "@/types/dataType";
 
@@ -17,7 +17,7 @@ export default function KnowledgeDetail() {
   const [originFileObj, setOriginFileObj] = useState<any>(null)
   const [files, setFiles] = React.useState<File>()
   const [fileContent, setFileContent] = React.useState<string>("")
-  const [message, setMessage] = React.useState<string[]>([])
+  const [message, setMessage] = React.useState<QaList>([])
   const [prompt , setPrompt ] = React.useState<string>("")
 
   const getTextContent = async (e: any) => {
@@ -78,6 +78,7 @@ export default function KnowledgeDetail() {
           const responseList = result.map((item) => item).flat();
           console.log("QA拆分结束")
           console.log("扁平化拆分结果", responseList)
+          setMessage([...responseList])
         },
         onerror(err) {
           console.log("QA拆分错误")
@@ -96,19 +97,48 @@ export default function KnowledgeDetail() {
     )
   }
 
+  async function get_qa_data(qaList: QaList, kbID: string| null) {
+    const vector = await handelEmbedding()
+    return qaList.map((item, index) => {
+      return {
+        knowledgeListId: kbID,
+        q: item.q,
+        a: item.a,
+        vector: vector.data[index].embedding,
+      }
+    })
+  }
 
+  function get_questionlist(qaList: QaList) {
+    return qaList.map((item) => {
+      return item.q
+    })
+  }
 
   async function handelSave() {
+    // 需要校验kpid是否存在
+    const list_data = await get_qa_data(message, kbid)
+    console.log("打印listdata:", list_data)
     const res = await fetch("/api/dateset", {
       method: "POST",
       body: JSON.stringify({
-        dataSetList: []
+        dataSetList: list_data
       }),
     })
     const data = await res.json()
     console.log(data)
   }
 
+  async function handelEmbedding() {
+    const res = await fetch("/api/dateset/openai_emb", {
+      method: "POST",
+      body: JSON.stringify({
+        inputs: get_questionlist(message)
+      })
+    })
+    const data = await res.json()
+    return data.res
+  }
 
   return (
     <div className="p-4">
@@ -145,6 +175,7 @@ export default function KnowledgeDetail() {
           </Card>
           <Button onClick={handelChat}>发送</Button>
           <Button onClick={handelSave}>保存</Button>
+
         </Card>
       </div>
     </div>
